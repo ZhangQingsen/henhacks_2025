@@ -15,7 +15,8 @@ def curr_cost_est():
         "o1-preview": 15.00 / 1000000,
         "o1-mini": 3.00 / 1000000,
         "claude-3-5-sonnet": 3.00 / 1000000,
-        "deepseek-chat": 1.00 / 1000000,
+        "deepseek-chat": 0.07 / 1000000,
+        "deepseek-reasoner": 0.14 / 1000000,
         "o1": 15.00 / 1000000,
     }
     costmap_out = {
@@ -24,7 +25,8 @@ def curr_cost_est():
         "o1-preview": 60.00 / 1000000,
         "o1-mini": 12.00 / 1000000,
         "claude-3-5-sonnet": 12.00 / 1000000,
-        "deepseek-chat": 5.00 / 1000000,
+        "deepseek-chat": 1.10 / 1000000,
+        "deepseek-reasoner": 2.19 / 1000000,
         "o1": 60.00 / 1000000,
     }
     return sum([costmap_in[_]*TOKENS_IN[_] for _ in TOKENS_IN]) + sum([costmap_out[_]*TOKENS_OUT[_] for _ in TOKENS_OUT])
@@ -120,6 +122,30 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, anthropic
                             messages=messages,
                             temperature=temp)
                 answer = completion.choices[0].message.content
+            elif model_str == "deepseek-reasoner":
+                model_str = "deepseek-reasoner"
+                # 合并 system_prompt 到用户消息（官方示例无 system 角色）
+                messages = [{"role": "user", "content": system_prompt + "\n" + prompt}]
+                
+                if version == "0.28":
+                    raise Exception("Please upgrade your OpenAI version to use DeepSeek client")
+                else:
+                    deepseek_client = OpenAI(
+                        api_key=os.getenv('DEEPSEEK_API_KEY'),
+                        base_url="https://api.deepseek.com/v1"
+                    )
+                    if temp is None:
+                        completion = deepseek_client.chat.completions.create(
+                            model="deepseek-reasoner",
+                            messages=messages
+                        )
+                    else:
+                        completion = deepseek_client.chat.completions.create(
+                            model="deepseek-reasoner",
+                            messages=messages,
+                            temperature=temp
+                        )
+                answer = completion.choices[0].message.content
             elif model_str == "o1-mini":
                 model_str = "o1-mini"
                 messages = [
@@ -163,7 +189,7 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, anthropic
             try:
                 if model_str in ["o1-preview", "o1-mini", "claude-3.5-sonnet", "o1"]:
                     encoding = tiktoken.encoding_for_model("gpt-4o")
-                elif model_str in ["deepseek-chat"]:
+                elif model_str in ["deepseek-chat", "deepseek-reasoner"]:
                     encoding = tiktoken.encoding_for_model("cl100k_base")
                 else:
                     encoding = tiktoken.encoding_for_model(model_str)
