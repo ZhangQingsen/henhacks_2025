@@ -615,7 +615,29 @@ def parse_arguments():
     return parser.parse_args()
 
 
+
+
 if __name__ == "__main__":
+    ####################################################
+    import sys
+
+    # 在原有代码前添加以下内容（紧跟在if __name__ == "__main__":下方）
+    class DualLogger:
+        def __init__(self, filename):
+            self.terminal = sys.stdout
+            self.log = open(filename, "w", encoding="utf-8-sig")
+
+        def write(self, message):
+            self.terminal.write(message)
+            self.log.write(message)
+
+        def flush(self):
+            self.terminal.flush()
+            self.log.flush()
+
+    # 替换标准输出
+    sys.stdout = DualLogger("research_log.txt")
+    ####################################################
     args = parse_arguments()
 
     llm_backend = args.llm_backend
