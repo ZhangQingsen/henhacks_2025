@@ -130,7 +130,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
-.venv.bat
+*.bat
 env/
 venv/
 ENV/
