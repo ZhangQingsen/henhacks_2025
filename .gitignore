@@ -174,5 +174,5 @@ cython_debug/
 
 
 # SAM2 and gaussian-splatting
-gaussian-splatting/*
-sam2/*
+gaussian-splatting/
+sam2/
