@@ -170,3 +170,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+
+# SAM2 and gaussian-splatting
+gaussian-splatting/*
+sam2/*
