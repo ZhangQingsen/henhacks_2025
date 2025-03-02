@@ -26,7 +26,6 @@ Using Gaussian Splatting for reconstruction
     - __2.3__ interface of visualize the process of reconstruction train
 3. SAM 2 phase
     - make sure it run on provided video
-    - perform the selection of object in video
-    - 
+    - ✅ perform the selection of object in video
 4. Gaussian Splatting phase
     - make sure it run on provided video
